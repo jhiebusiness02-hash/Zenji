@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Login - Luxe Stay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            backdrop-filter: blur(12px);
+        }
+        .login-card h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+        .login-card p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .form-group {
+            margin-bottom: 1.3rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+        }
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
+            font-size: 1rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .btn-login {
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            background: #e74c3c;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            background: #c0392b;
+        }
+        .note {
+            margin-top: 1rem;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.95rem;
+        }
+        .logout-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #ffffff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1>Owner Login</h1>
+        <p>Only the hotel owner can access the booking management dashboard. Enter your owner password to continue.</p>
+        <form id="owner-login-form">
+            <div class="form-group">
+                <label for="owner-password">Owner Password</label>
+                <input type="password" id="owner-password" placeholder="Enter owner password" required>
+            </div>
+            <button type="submit" class="btn-login">Access Bookings</button>
+        </form>
+        <p class="note">If you are a customer, you should not use this page. Only the owner has permission to view booking records.</p>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD_HASH = '59c1af34128bca2f5c8b874a560ee38b1141b188';
+        const form = document.getElementById('owner-login-form');
+
+        function sha1(message) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(message);
+            return crypto.subtle.digest('SHA-1', data).then(hashBuffer => {
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            });
+        }
+
+        function authCheck() {
+            const auth = sessionStorage.getItem('hotelAdminAuth');
+            if (auth === 'true') {
+                window.location.href = 'bookings.html';
+            }
+        }
+
+        authCheck();
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const password = document.getElementById('owner-password').value;
+            sha1(password).then(hash => {
+                if (hash === ADMIN_PASSWORD_HASH) {
+                    sessionStorage.setItem('hotelAdminAuth', 'true');
+                    window.location.href = 'bookings.html';
+                } else {
+                    alert('Invalid password. Please try again.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
