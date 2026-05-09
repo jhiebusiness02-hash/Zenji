@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Management - Luxe Stay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --light-bg: #ecf0f1;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --border-color: #bdc3c7;
+            --success-color: #27ae60;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--light-bg) 0%, #f8f9fa 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo i {
+            color: var(--secondary-color);
+        }
+
+        .back-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .dashboard {
+            min-height: 80vh;
+        }
+
+        .dashboard h1 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .stat-card h3 {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Filter and Controls */
+        .controls {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-export {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #2980b9;
+        }
+
+        .btn-clear {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #c0392b;
+        }
+
+        /* Table */
+        .bookings-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light-bg);
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--light-bg);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+        }
+
+        .status-confirmed {
+            background: rgba(39, 174, 96, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-paid {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        /* Payment Badge */
+        .payment-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .payment-debit,
+        .payment-credit {
+            background: rgba(52, 152, 219, 0.2);
+            color: var(--accent-color);
+        }
+
+        .payment-downpayment {
+            background: rgba(230, 126, 34, 0.2);
+            color: #e67e22;
+        }
+
+        .payment-wallet {
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+        }
+
+        .payment-bank {
+            background: rgba(39, 174, 96, 0.2);
+            color: var(--success-color);
+        }
+
+        /* Amount */
+        .amount {
+            font-weight: bold;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--border-color);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .empty-state h2 {
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--light-bg);
+            padding-bottom: 1rem;
+        }
+
+        .modal-header h2 {
+            color: var(--primary-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .detail-item p {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard h1 {
+                font-size: 1.8rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .hidden-mobile {
+                display: none;
+            }
+
+            header .container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-hotel"></i>
+                <span>Luxe Stay - Booking Management</span>
+            </div>
+            <div>
+                <a href="index.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Website
+                </a>
+                <button class="back-btn" style="margin-left: 0.75rem; background: #3498db;" onclick="logoutOwner()">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard container">
+        <h1><i class="fas fa-calendar-check"></i> Bookings Dashboard</h1>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <i class="fas fa-book"></i>
+                <h3>Total Bookings</h3>
+                <div class="number" id="total-bookings">0</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-money-bill-wave"></i>
+                <h3>Total Revenue</h3>
+                <div class="number" id="total-revenue">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-dollar-sign"></i>
+                <h3>Total Earnings</h3>
+                <div class="number" id="total-earnings">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-hourglass-half"></i>
+                <h3>Pending Earnings</h3>
+                <div class="number" id="pending-earnings">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-trash-alt"></i>
+                <h3>Deleted Earnings</h3>
+                <div class="number" id="deleted-earnings">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3>Total Guests</h3>
+                <div class="number" id="total-guests">0</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search by name, email, or booking ID...">
+                <button class="btn btn-export" onclick="searchBookings()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-export" onclick="exportToCSV()">
+                    <i class="fas fa-download"></i> Export CSV
+                </button>
+                <button class="btn btn-export" onclick="viewDeletedHistory()">
+                    <i class="fas fa-eye-slash"></i> View Deleted
+                </button>
+                <button class="btn btn-clear" onclick="resetMonth()">
+                    <i class="fas fa-undo"></i> Reset Month
+                </button>
+            </div>
+        </div>
+
+        <!-- Bookings Table -->
+        <div class="bookings-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Guest Name</th>
+                        <th hidden class="hidden-mobile">Email</th>
+                        <th>Room Type</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Amount</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Date Booked</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bookings-tbody">
+                    <tr>
+                        <td colspan="11" style="text-align: center; padding: 2rem;">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h2>No Bookings Yet</h2>
+                                <p>Bookings will appear here as soon as guests make reservations.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Booking Details</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Deleted History Modal -->
+    <div id="deleted-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Deleted Booking History</h2>
+                <button class="close-btn" onclick="closeDeletedModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="deleted-modal-body">
+                <!-- Deleted history will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Luxe Stay Booking Management. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Load and display bookings
+        function loadBookings() {
+            const bookings = JSON.parse(localStorage.getItem('hotelBookings')) || [];
+            const tbody = document.getElementById('bookings-tbody');
+
+            if (bookings.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" style="text-align: center; padding: 2rem;">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h2>No Bookings Yet</h2>
+                                <p>Bookings will appear here as soon as guests make reservations.</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                updateStats([]);
+                return;
+            }
+
+            tbody.innerHTML = bookings.map(booking => `
+                <tr>
+                    <td><strong>${booking.id}</strong></td>
+                    <td>${booking.fullname}</td>
+                    <td hidden class="hidden-mobile">${booking.email}</td>
+                    <td>${booking.roomtype}</td>
+                    <td>${booking.checkin}</td>
+                    <td>${booking.checkout}</td>
+                    <td class="amount">$${booking.amount}</td>
+                    <td><span class="payment-badge payment-${booking.paymentmethod}">${booking.paymentmethod}</span></td>
+                    <td><span class="status-badge status-${booking.status.toLowerCase()}">${booking.status}</span></td>
+                    <td>${booking.timestamp}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewDetails('${booking.id}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${booking.status === 'Pending' ? `<button class="action-btn" onclick="updateBookingStatus('${booking.id}')" style="color: #3498db;" title="Mark Paid/Confirmed"><i class="fas fa-check-circle"></i></button>` : ''}
+                        <button class="action-btn" onclick="deleteBooking('${booking.id}')" style="color: var(--secondary-color);" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            updateStats(bookings);
+        }
+
+        // Update statistics
+        function updateStats(bookings) {
+            document.getElementById('total-bookings').textContent = bookings.length;
+            
+            let totalRevenue = 0;
+            let totalEarnings = 0;
+            let pendingEarnings = 0;
+            let totalGuests = 0;
+            bookings.forEach(booking => {
+                totalRevenue += parseFloat(booking.amount);
+                totalGuests += parseInt(booking.guests);
+                if (booking.status === 'Confirmed' || booking.status === 'Paid') {
+                    totalEarnings += parseFloat(booking.amount);
+                }
+                if (booking.status === 'Pending') {
+                    pendingEarnings += parseFloat(booking.amount);
+                }
+            });
+
+            const deletedBookings = JSON.parse(localStorage.getItem('hotelDeletedBookings')) || [];
+            let deletedEarnings = deletedBookings.reduce((sum, entry) => sum + parseFloat(entry.amount), 0);
+
+            document.getElementById('total-revenue').textContent = '$' + totalRevenue.toFixed(2);
+            document.getElementById('total-earnings').textContent = '$' + totalEarnings.toFixed(2);
+            document.getElementById('pending-earnings').textContent = '$' + pendingEarnings.toFixed(2);
+            document.getElementById('deleted-earnings').textContent = '$' + deletedEarnings.toFixed(2);
+            document.getElementById('total-guests').textContent = totalGuests;
+        }
+
+        // View booking details
+        function viewDetails(bookingId) {
+            const bookings = JSON.parse(localStorage.getItem('hotelBookings')) || [];
+            const booking = bookings.find(b => b.id === bookingId);
+
+            if (booking) {
+                const modalBody = document.getElementById('modal-body');
+                modalBody.innerHTML = `
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <label>Booking ID</label>
+                            <p>${booking.id}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Status</label>
+                            <p><span class="status-badge status-${booking.status.toLowerCase()}">${booking.status}</span></p>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <label>Full Name</label>
+                            <p>${booking.fullname}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Email</label>
+                            <p>${booking.email}</p>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <label>Phone</label>
+                            <p>${booking.phone}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Number of Guests</label>
+                            <p>${booking.guests}</p>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <label>Room Type</label>
+                            <p>${booking.roomtype}</p>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <label>Check-in Date</label>
+                            <p>${booking.checkin}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Check-out Date</label>
+                            <p>${booking.checkout}</p>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <label>Payment Method</label>
+                            <p><span class="payment-badge payment-${booking.paymentmethod}">${booking.paymentmethod.toUpperCase()}</span></p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Amount Paid</label>
+                            <p class="amount">$${booking.amount}</p>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <label>Booking Date & Time</label>
+                            <p>${booking.timestamp}</p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('detail-modal').classList.add('active');
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('detail-modal').classList.remove('active');
+        }
+
+        // Delete booking
+        function deleteBooking(bookingId) {
+            if (confirm('Are you sure you want to delete this booking?')) {
+                let bookings = JSON.parse(localStorage.getItem('hotelBookings')) || [];
+                const booking = bookings.find(b => b.id === bookingId);
+                bookings = bookings.filter(b => b.id !== bookingId);
+                localStorage.setItem('hotelBookings', JSON.stringify(bookings));
+
+                if (booking) {
+                    const deletedBookings = JSON.parse(localStorage.getItem('hotelDeletedBookings')) || [];
+                    deletedBookings.push({
+                        id: booking.id,
+                        fullname: booking.fullname,
+                        amount: booking.amount,
+                        status: booking.status,
+                        deletedAt: new Date().toLocaleString()
+                    });
+                    localStorage.setItem('hotelDeletedBookings', JSON.stringify(deletedBookings));
+                }
+
+                document.getElementById('search-input').value = '';
+                loadBookings();
+                alert('Booking deleted successfully!');
+            }
+        }
+
+        // Search bookings
+        function searchBookings() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const bookings = JSON.parse(localStorage.getItem('hotelBookings')) || [];
+            const filtered = bookings.filter(b => 
+                b.fullname.toLowerCase().includes(searchTerm) ||
+                b.email.toLowerCase().includes(searchTerm) ||
+                b.id.toLowerCase().includes(searchTerm)
+            );
+
+            const tbody = document.getElementById('bookings-tbody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" style="text-align: center; padding: 2rem; color: var(--text-light);">
+                            No bookings found matching your search.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(booking => `
+                <tr>
+                    <td><strong>${booking.id}</strong></td>
+                    <td>${booking.fullname}</td>
+                    <td hidden class="hidden-mobile">${booking.email}</td>
+                    <td>${booking.roomtype}</td>
+                    <td>${booking.checkin}</td>
+                    <td>${booking.checkout}</td>
+                    <td class="amount">$${booking.amount}</td>
+                    <td><span class="payment-badge payment-${booking.paymentmethod}">${booking.paymentmethod}</span></td>
+                    <td><span class="status-badge status-${booking.status.toLowerCase()}">${booking.status}</span></td>
+                    <td>${booking.timestamp}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewDetails('${booking.id}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${booking.status === 'Pending' ? `<button class="action-btn" onclick="updateBookingStatus('${booking.id}')" style="color: #3498db;" title="Mark Paid/Confirmed"><i class="fas fa-check-circle"></i></button>` : ''}
+                        <button class="action-btn" onclick="deleteBooking('${booking.id}')" style="color: var(--secondary-color);" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            const bookings = JSON.parse(localStorage.getItem('hotelBookings')) || [];
+            if (bookings.length === 0) {
+                alert('No bookings to export!');
+                return;
+            }
+
+            let csv = 'Booking ID,Name,Email,Phone,Room Type,Guests,Check-in,Check-out,Amount,Payment Method,Status,Date Booked\n';
+            bookings.forEach(b => {
+                csv += `"${b.id}","${b.fullname}","${b.email}","${b.phone}","${b.roomtype}","${b.guests}","${b.checkin}","${b.checkout}","${b.amount}","${b.paymentmethod}","${b.status}","${b.timestamp}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bookings_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        // Update booking status
+        function updateBookingStatus(bookingId) {
+            let bookings = JSON.parse(localStorage.getItem('hotelBookings')) || [];
+            const booking = bookings.find(b => b.id === bookingId);
+            if (!booking) return;
+
+            const newStatus = prompt('Update status to Confirmed or Paid:', booking.status === 'Pending' ? 'Confirmed' : booking.status);
+            if (!newStatus) return;
+
+            const normalized = newStatus.trim().toLowerCase();
+            if (!['pending', 'confirmed', 'paid'].includes(normalized)) {
+                alert('Status must be Pending, Confirmed, or Paid.');
+                return;
+            }
+
+            booking.status = normalized === 'pending' ? 'Pending' : normalized === 'paid' ? 'Paid' : 'Confirmed';
+            localStorage.setItem('hotelBookings', JSON.stringify(bookings));
+            loadBookings();
+            alert(`Booking status updated to ${booking.status}.`);
+        }
+
+        // Reset month totals and clear bookings
+        function resetMonth() {
+            if (confirm('Are you sure you want to reset the month? This will delete all booking records and deleted logs.')) {
+                if (confirm('This action cannot be undone. Click OK to confirm.')) {
+                    localStorage.removeItem('hotelBookings');
+                    localStorage.removeItem('hotelDeletedBookings');
+                    document.getElementById('search-input').value = '';
+                    loadBookings();
+                    alert('Monthly data has been reset.');
+                }
+            }
+        }
+
+        function viewDeletedHistory() {
+            const deletedBookings = JSON.parse(localStorage.getItem('hotelDeletedBookings')) || [];
+            const body = document.getElementById('deleted-modal-body');
+
+            if (deletedBookings.length === 0) {
+                body.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h2>No Deleted Bookings</h2>
+                        <p>Deleted booking history will appear here after you remove reservations.</p>
+                    </div>
+                `;
+            } else {
+                const totalDeleted = deletedBookings.reduce((sum, entry) => sum + parseFloat(entry.amount), 0);
+                body.innerHTML = `
+                    <div class="detail-row">
+                        <div class="detail-item">
+                            <label>Total Deleted Earnings</label>
+                            <p class="amount">$${totalDeleted.toFixed(2)}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Deleted Bookings</label>
+                            <p>${deletedBookings.length}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top:1rem;">
+                        ${deletedBookings.map(entry => `
+                            <div style="border-bottom:1px solid #f0f0f0; padding: 1rem 0; display:flex; justify-content:space-between; gap:1rem; align-items:flex-start;">
+                                <div>
+                                    <p><strong>${entry.fullname}</strong> (${entry.id})</p>
+                                    <p>Amount: $${entry.amount} • Status: ${entry.status}</p>
+                                    <p>Deleted at: ${entry.deletedAt}</p>
+                                </div>
+                                <button class="btn btn-export" style="height:40px;" onclick="restoreDeletedBooking('${entry.id}')">Restore</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            document.getElementById('deleted-modal').classList.add('active');
+        }
+
+        function restoreDeletedBooking(id) {
+            const deletedBookings = JSON.parse(localStorage.getItem('hotelDeletedBookings')) || [];
+            const index = deletedBookings.findIndex(entry => entry.id === id);
+            if (index === -1) {
+                alert('Deleted booking not found.');
+                return;
+            }
+
+            const restoredBooking = deletedBookings.splice(index, 1)[0];
+            const bookings = JSON.parse(localStorage.getItem('hotelBookings')) || [];
+            bookings.push(restoredBooking);
+
+            localStorage.setItem('hotelDeletedBookings', JSON.stringify(deletedBookings));
+            localStorage.setItem('hotelBookings', JSON.stringify(bookings));
+            loadBookings();
+            viewDeletedHistory();
+            alert('Booking restored successfully.');
+        }
+
+        function closeDeletedModal() {
+            document.getElementById('deleted-modal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('deleted-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeletedModal();
+            }
+        });
+
+        function ensureOwnerAccess() {
+            const auth = sessionStorage.getItem('hotelAdminAuth');
+            if (auth !== 'true') {
+                window.location.href = 'admin.html';
+            }
+        }
+
+        function logoutOwner() {
+            sessionStorage.removeItem('hotelAdminAuth');
+            window.location.href = 'index.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            ensureOwnerAccess();
+            loadBookings();
+        });
+    </script>
+</body>
+</html>
