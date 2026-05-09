@@ -1,0 +1,195 @@
+// Room prices
+const roomPrices = {
+    standard: 89,
+    deluxe: 159,
+    suite: 249,
+    penthouse: 499
+};
+
+// Set minimum date to today
+document.addEventListener('DOMContentLoaded', function() {
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
+    const today = new Date().toISOString().split('T')[0];
+    
+    checkinInput.min = today;
+    checkoutInput.min = today;
+
+    // Update checkout minimum date when checkin changes
+    checkinInput.addEventListener('change', function() {
+        checkoutInput.min = this.value;
+        if (checkoutInput.value < this.value) {
+            checkoutInput.value = '';
+        }
+        calculateTotal();
+    });
+
+    checkoutInput.addEventListener('change', calculateTotal);
+    document.getElementById('roomtype').addEventListener('change', calculateTotal);
+});
+
+// Show/hide card details based on payment method
+document.getElementById('paymentmethod').addEventListener('change', function() {
+    const cardDetails = document.getElementById('card-details');
+    if (this.value === 'debit' || this.value === 'credit') {
+        cardDetails.style.display = 'grid';
+        document.getElementById('cardname').required = true;
+        document.getElementById('cardnumber').required = true;
+        document.getElementById('expiry').required = true;
+        document.getElementById('cvv').required = true;
+    } else {
+        cardDetails.style.display = 'none';
+        document.getElementById('cardname').required = false;
+        document.getElementById('cardnumber').required = false;
+        document.getElementById('expiry').required = false;
+        document.getElementById('cvv').required = false;
+    }
+});
+
+// Calculate total amount
+function calculateTotal() {
+    const checkin = document.getElementById('checkin').value;
+    const checkout = document.getElementById('checkout').value;
+    const roomtype = document.getElementById('roomtype').value;
+    const amountInput = document.getElementById('amount');
+
+    if (checkin && checkout && roomtype) {
+        const checkInDate = new Date(checkin);
+        const checkOutDate = new Date(checkout);
+        const nights = (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24);
+        
+        if (nights > 0) {
+            const pricePerNight = roomPrices[roomtype];
+            const subtotal = pricePerNight * nights;
+            const total = subtotal * 1.1; // 10% tax
+            
+            amountInput.value = total.toFixed(2);
+            document.getElementById('total-amount').textContent = '$' + total.toFixed(2);
+        }
+    }
+}
+
+// Format card number input
+document.getElementById('cardnumber').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '');
+    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+    e.target.value = formattedValue;
+});
+
+// Format expiry date input
+document.getElementById('expiry').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+    }
+    e.target.value = value;
+});
+
+// CVV only numbers
+document.getElementById('cvv').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+});
+
+// Booking form submission
+document.querySelector('.booking-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const checkin = document.getElementById('checkin').value;
+    const checkout = document.getElementById('checkout').value;
+    const guests = document.getElementById('guests').value;
+    const roomtype = document.getElementById('roomtype').value;
+    const fullname = document.getElementById('fullname').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const paymentmethod = document.getElementById('paymentmethod').value;
+    const amount = document.getElementById('amount').value;
+    
+    if (!checkin || !checkout || !guests || !roomtype || !fullname || !email || !phone || !paymentmethod || !amount) {
+        alert('Please fill in all required fields');
+        return;
+    }
+
+    // Validate card details if payment method is debit or credit
+    if (paymentmethod === 'debit' || paymentmethod === 'credit') {
+        const cardname = document.getElementById('cardname').value;
+        const cardnumber = document.getElementById('cardnumber').value;
+        const expiry = document.getElementById('expiry').value;
+        const cvv = document.getElementById('cvv').value;
+
+        if (!cardname || !cardnumber || !expiry || !cvv) {
+            alert('Please fill in all card details');
+            return;
+        }
+
+        if (cardnumber.replace(/\s/g, '').length !== 16) {
+            alert('Card number must be 16 digits');
+            return;
+        }
+
+        if (cvv.length !== 3) {
+            alert('CVV must be 3 digits');
+            return;
+        }
+    }
+
+    const roomName = roomtype.charAt(0).toUpperCase() + roomtype.slice(1).replace('penthouse', 'Presidential Penthouse').replace('suite', 'Luxury Suite');
+    const checkInDate = new Date(checkin).toLocaleDateString();
+    const checkOutDate = new Date(checkout).toLocaleDateString();
+    
+    // Create booking object
+    const booking = {
+        id: 'BK' + Date.now(),
+        timestamp: new Date().toLocaleString(),
+        fullname: fullname,
+        email: email,
+        phone: phone,
+        roomtype: roomName,
+        guests: guests,
+        checkin: checkInDate,
+        checkout: checkOutDate,
+        paymentmethod: paymentmethod,
+        amount: parseFloat(amount).toFixed(2),
+        status: paymentmethod === 'downpayment' ? 'Pending' : 'Confirmed'
+    };
+
+    // Save to localStorage
+    let bookings = JSON.parse(localStorage.getItem('hotelBookings')) || [];
+    bookings.push(booking);
+    localStorage.setItem('hotelBookings', JSON.stringify(bookings));
+
+    alert(`✓ Booking ${booking.status === 'Pending' ? 'Pending Payment' : 'Confirmed'}!\n\n📋 Guest Details:\nName: ${fullname}\nEmail: ${email}\nPhone: ${phone}\n\n🏨 Room Details:\nRoom Type: ${roomName}\nGuests: ${guests}\nCheck-in: ${checkInDate}\nCheck-out: ${checkOutDate}\n\n💳 Payment:\nMethod: ${paymentmethod.toUpperCase()}\nAmount: $${parseFloat(amount).toFixed(2)}\n\nStatus: ${booking.status}\nBooking ID: ${booking.id}\n\nThank you for booking with Luxe Stay!`);
+    
+    // Reset form
+    this.reset();
+    calculateTotal();
+});
+
+// Book Now buttons
+document.querySelectorAll('.book-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const roomName = this.closest('.room-card').querySelector('h3').textContent;
+        const price = this.closest('.room-card').querySelector('.price').textContent;
+        alert(`You selected: ${roomName}\nPrice: ${price}\n\nPlease fill in your details below to proceed.`);
+        document.getElementById('fullname').focus();
+    });
+});
+
+// Smooth scroll for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href !== '#' && document.querySelector(href)) {
+            e.preventDefault();
+            document.querySelector(href).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+// CTA button scroll to booking
+document.querySelector('.cta-btn').addEventListener('click', function() {
+    document.getElementById('booking').scrollIntoView({
+        behavior: 'smooth'
+    });
+});
