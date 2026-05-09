@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxe Stay - Premium Hotel Reservations</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-hotel"></i>
+                <span>Luxe Stay</span>
+            </div>
+            <nav class="nav">
+                <a href="#rooms">Rooms</a>
+                <a href="#booking">Booking</a>
+                <a href="#contact">Contact</a>
+                <a href="admin.html" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 5px;"><i class="fas fa-chart-bar"></i> Bookings</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Experience Luxury & Comfort</h1>
+            <p>Find your perfect stay at unbeatable prices</p>
+            <button class="cta-btn">Explore Now</button>
+        </div>
+        <div class="hero-overlay"></div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="booking" class="booking-section">
+        <div class="container">
+            <h2>Book Your Perfect Room</h2>
+            <form class="booking-form">
+                <!-- Room Details Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="checkin">Check-in Date</label>
+                        <input type="date" id="checkin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout">Check-out Date</label>
+                        <input type="date" id="checkout" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guests">Number of Guests</label>
+                        <select id="guests" required>
+                            <option value="">Select guests</option>
+                            <option value="1">1 Guest</option>
+                            <option value="2">2 Guests</option>
+                            <option value="3">3 Guests</option>
+                            <option value="4">4 Guests</option>
+                            <option value="5">5+ Guests</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomtype">Room Type</label>
+                        <select id="roomtype" required>
+                            <option value="">Select room type</option>
+                            <option value="standard">Standard Room</option>
+                            <option value="deluxe">Deluxe Room</option>
+                            <option value="suite">Suite</option>
+                            <option value="penthouse">Penthouse</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Guest Information Row -->
+                <div class="form-divider"><span>Guest Information</span></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fullname">Full Name</label>
+                        <input type="text" id="fullname" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="+1 (800) 123-4567" required>
+                    </div>
+                </div>
+
+                <!-- Payment Information Row -->
+                <div class="form-divider"><span>Payment Information</span></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="paymentmethod">Payment Method</label>
+                        <select id="paymentmethod" required>
+                            <option value="">Select payment method</option>
+                            <option value="downpayment">Down Payment (50%)</option>
+                            <option value="debit">Debit Card</option>
+                            <option value="credit">Credit Card</option>
+                            <option value="wallet">Digital Wallet</option>
+                            <option value="bank">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" placeholder="0.00" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <!-- Payment Details Row (Conditional) -->
+                <div class="form-row" id="card-details" style="display: none;">
+                    <div class="form-group">
+                        <label for="cardname">Cardholder Name</label>
+                        <input type="text" id="cardname" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="cardnumber">Card Number</label>
+                        <input type="text" id="cardnumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div class="form-group">
+                        <label for="expiry">Expiry Date</label>
+                        <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" placeholder="123" maxlength="3">
+                    </div>
+                </div>
+
+                <!-- Total Amount Display -->
+                <div class="form-row">
+                    <div class="total-info">
+                        <p>Estimated Total: <span id="total-amount">$0.00</span></p>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="search-btn">Complete Booking</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Rooms Section -->
+    <section id="rooms" class="rooms-section">
+        <div class="container">
+            <h2>Our Rooms</h2>
+            <div class="rooms-grid">
+                <!-- Standard Room -->
+                <div class="room-card">
+                    <div class="room-image standard-img"></div>
+                    <div class="room-info">
+                        <h3>Standard Room</h3>
+                        <p class="room-desc">Cozy and comfortable with essential amenities</p>
+                        <ul class="room-features">
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-tv"></i> LED TV</li>
+                            <li><i class="fas fa-air-conditioner"></i> AC</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span class="price">$89<span class="period">/night</span></span>
+                            <button class="book-btn">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deluxe Room -->
+                <div class="room-card">
+                    <div class="room-image deluxe-img"></div>
+                    <div class="room-info">
+                        <h3>Deluxe Room</h3>
+                        <p class="room-desc">Spacious with premium furnishings and amenities</p>
+                        <ul class="room-features">
+                            <li><i class="fas fa-wifi"></i> Free WiFi</li>
+                            <li><i class="fas fa-hot-tub"></i> Jacuzzi Bath</li>
+                            <li><i class="fas fa-tree"></i> City View</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span class="price">$159<span class="period">/night</span></span>
+                            <button class="book-btn">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suite -->
+                <div class="room-card">
+                    <div class="room-image suite-img"></div>
+                    <div class="room-info">
+                        <h3>Luxury Suite</h3>
+                        <p class="room-desc">Elegant suite with living area and premium service</p>
+                        <ul class="room-features">
+                            <li><i class="fas fa-concierge-bell"></i> Concierge</li>
+                            <li><i class="fas fa-utensils"></i> Room Service</li>
+                            <li><i class="fas fa-spa"></i> Spa Access</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span class="price">$249<span class="period">/night</span></span>
+                            <button class="book-btn">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Penthouse -->
+                <div class="room-card featured">
+                    <div class="room-image penthouse-img"></div>
+                    <div class="room-info">
+                        <h3>Presidential Penthouse</h3>
+                        <p class="room-desc">Ultimate luxury with panoramic views</p>
+                        <ul class="room-features">
+                            <li><i class="fas fa-crown"></i> VIP Treatment</li>
+                            <li><i class="fas fa-wine-glass"></i> Private Bar</li>
+                            <li><i class="fas fa-swimmer"></i> Private Pool</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span class="price">$499<span class="period">/night</span></span>
+                            <button class="book-btn featured-btn">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Amenities Section -->
+    <section class="amenities-section">
+        <div class="container">
+            <h2>Our Amenities</h2>
+            <div class="amenities-grid">
+                <div class="amenity-item">
+                    <i class="fas fa-swimming-pool"></i>
+                    <h3>Swimming Pool</h3>
+                </div>
+                <div class="amenity-item">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Fine Dining</h3>
+                </div>
+                <div class="amenity-item">
+                    <i class="fas fa-dumbbell"></i>
+                    <h3>Fitness Center</h3>
+                </div>
+                <div class="amenity-item">
+                    <i class="fas fa-spa"></i>
+                    <h3>Spa & Wellness</h3>
+                </div>
+                <div class="amenity-item">
+                    <i class="fas fa-wifi"></i>
+                    <h3>High Speed WiFi</h3>
+                </div>
+                <div class="amenity-item">
+                    <i class="fas fa-car"></i>
+                    <h3>Free Parking</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2>Get In Touch</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <h3>Phone</h3>
+                    <p>+1 (800) 123-4567</p>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email</h3>
+                    <p>info@luxestay.com</p>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Location</h3>
+                    <p>123 Luxury Ave, Downtown, City</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Luxe Stay. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
